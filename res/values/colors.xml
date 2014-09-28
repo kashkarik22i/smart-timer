@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <item name="button_wait" type="color">#DC143C</item>
+    <item name="button_ready" type="color">#6B8E23</item>
+    <item name="button_go" type="color">#87CEEB</item>
+
+    <color name="black_overlay">#66000000</color>
+
+</resources>

@@ -56,15 +56,16 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int wait_dull_semaphore_colors=0x7f020012;
     }
     public static final class id {
-        public static final int action_settings=0x7f090006;
-        public static final int browse_results=0x7f090008;
+        public static final int action_settings=0x7f090007;
+        public static final int browse_results=0x7f090009;
         public static final int day_table=0x7f090000;
-        public static final int imageView1=0x7f090002;
-        public static final int microphone=0x7f090007;
-        public static final int results=0x7f090005;
-        public static final int scramble=0x7f090001;
-        public static final int startButton=0x7f090004;
-        public static final int time=0x7f090003;
+        public static final int imageView1=0x7f090003;
+        public static final int microphone=0x7f090008;
+        public static final int results=0x7f090006;
+        public static final int scramble=0x7f090002;
+        public static final int startButton=0x7f090005;
+        public static final int statistics_table=0x7f090001;
+        public static final int time=0x7f090004;
     }
     public static final class layout {
         public static final int activity_browse_results=0x7f030000;
@@ -77,13 +78,17 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int main=0x7f080001;
     }
     public static final class string {
-        public static final int action_settings=0x7f060010;
+        public static final int action_settings=0x7f060012;
         public static final int app_name=0x7f060000;
+        public static final int attempt_key=0x7f060010;
+        public static final int attempt_string=0x7f060014;
         public static final int browse_results=0x7f06000c;
         public static final int cube_picture=0x7f06000a;
         public static final int hello_world=0x7f060003;
+        public static final int last_date_key=0x7f060011;
         public static final int mute=0x7f060002;
         public static final int not_listening=0x7f060008;
+        public static final int result_string=0x7f060013;
         public static final int scramble=0x7f06000b;
         public static final int speech_setting=0x7f06000f;
         public static final int start_string=0x7f060004;

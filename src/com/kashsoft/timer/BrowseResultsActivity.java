@@ -1,13 +1,14 @@
 package com.kashsoft.timer;
 
 import java.util.List;
-import java.util.zip.Inflater;
+import java.util.Locale;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -32,16 +33,40 @@ public class BrowseResultsActivity extends Activity {
 			List<Result> listOfResults = resHistory.loadDateResults(this);
 			
 			TableLayout table = (TableLayout) findViewById(R.id.day_table);
-			for (Result r: listOfResults){
-				TableRow tr = (TableRow) getLayoutInflater().inflate(R.layout.result_table_row, null,false);
-				TextView tv = (TextView) getLayoutInflater().inflate(R.layout.table_cell, null,false);
-				tv.setText(ResultsView.resultString(r.getResult()));
-				tr.addView(tv);
-				table.addView(tr);
-			}
+			fillResultsTable(listOfResults, table);
+			addStatistics(listOfResults);			
 		}
 	}
-
+	
+	private void fillResultsTable(List<Result> listOfResults, TableLayout table){
+		for (Result r: listOfResults){
+			getLayoutInflater().inflate(R.layout.result_table_row, table, true);
+			TableRow tr = (TableRow) table.getChildAt(table.getChildCount() - 1);
+			//display attempt
+			getLayoutInflater().inflate(R.layout.table_cell, tr, true);
+			((TextView) tr.getChildAt(tr.getChildCount() - 1)).setText(String.valueOf(r.getAttempt()));
+			//display result
+			getLayoutInflater().inflate(R.layout.table_cell, tr, true);
+			((TextView) tr.getChildAt(tr.getChildCount() - 1)).setText(ResultsView.resultString(r.getResult()));
+		}
+	}
+	
+	private void addStatistics(List<Result> listOfResults){
+		addOneStatistic("avg", ResultsView.resultString(ResultHistory.avg(listOfResults)));
+		addOneStatistic("max", ResultsView.resultString(ResultHistory.max(listOfResults)));
+		addOneStatistic("min", ResultsView.resultString(ResultHistory.min(listOfResults)));
+		addOneStatistic("min 3 of 5", ResultsView.resultString(ResultHistory.minTreeOfFive(listOfResults)));
+		addOneStatistic("max 3 of 5", ResultsView.resultString(ResultHistory.maxTreeOfFive(listOfResults)));
+	}
+	
+	private void addOneStatistic(String name, String value){
+		TextView tv = new TextView(this);
+		tv.setText(String.format(Locale.getDefault(), "%s: %s", name, value));
+		tv.setGravity(Gravity.CENTER);
+		LinearLayout ll = (LinearLayout) findViewById(R.id.statistics_table);
+		ll.addView(tv);
+	}
+	
 	/**
 	 * Set up the {@link android.app.ActionBar}, if the API is available.
 	 */

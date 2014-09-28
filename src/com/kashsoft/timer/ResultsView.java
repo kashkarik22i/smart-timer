@@ -36,6 +36,8 @@ public class ResultsView {
 	}
 	
 	public static String resultString(long millis){
+		if (millis == Long.MAX_VALUE) return "";
+		if (millis == Long.MIN_VALUE) return "";
 		long minutes = millis/60000;
 		long seconds = (millis - minutes * 60000) / 1000;
 		long smaller = (millis - minutes * 60000 - seconds * 1000) / 10; //hundred's of a second 

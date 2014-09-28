@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,6 +21,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import edu.cmu.pocketsphinx.Assets;
 import edu.cmu.pocketsphinx.Hypothesis;
@@ -39,11 +41,8 @@ public class MainActivity extends Activity implements RecognitionListener{
 	private SpeechRecognizer recognizer;
 	private String speechMode;
 	private boolean withSpeech;
-	public static final String FAKE_KEY = "fake_key";
-	private String[] fake;
 	private MenuItem micro;
-	
-	private AsyncTask<Void, Void, Exception> loading; 
+	private ProgressDialog dialog; 
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +50,15 @@ public class MainActivity extends Activity implements RecognitionListener{
 		setContentView(R.layout.activity_main);
 		//ResultHistory resHistory = new ResultHistory();
 		//resHistory.removeDB(this);
-
+		
+    	SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+    	withSpeech = sharedPref.getBoolean(getString(R.string.speech_setting), false);
+    	attempt = sharedPref.getInt(getString(R.string.attempt_key), 0);
+    	long lastDate = sharedPref.getLong(getString(R.string.last_date_key), 0);
+    	if (lastDate != ResultsView.getCurrentDate()){
+    		attempt = 0;
+    	}
+    	
 		timer = new CubeTimer(this);
 		
 		final Button startButton = (Button) findViewById(R.id.startButton);
@@ -62,7 +69,6 @@ public class MainActivity extends Activity implements RecognitionListener{
 			}
 		});
 		
-		attempt = 0;
 		ListView lv = (ListView) findViewById(R.id.results);
 		resultView = new ResultsView(new ArrayList<Result>());
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, 
@@ -83,8 +89,6 @@ public class MainActivity extends Activity implements RecognitionListener{
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main, menu); 
 		micro = menu.findItem(R.id.microphone);
-    	SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-    	withSpeech = sharedPref.getBoolean(getString(R.string.speech_setting), false);
     	Log.i(TAG, "Loaded settings for speech");
     	if (withSpeech){
     		Log.i(TAG, "Speech is on");
@@ -109,12 +113,24 @@ public class MainActivity extends Activity implements RecognitionListener{
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    switch (item.getItemId()) {
 	        case R.id.microphone:
-	        	withSpeech = !withSpeech;
-	        	updateActionBarMicro();
+	        	if (withSpeech){
+	        		recognizer.cancel();
+	        		withSpeech = !withSpeech;
+		        	updateActionBarMicro();
+	        	} else {
+	        		startRecognizer();
+	        		if (recognizer != null) {
+	        			withSpeech = !withSpeech;
+	        			updateActionBarMicro();
+	        			Toast toast = Toast.makeText(this, "Can start recognizer", Toast.LENGTH_SHORT);
+	        			toast.show();
+	        		} else {
+
+	        		}
+	        	}
 	        	return true;
 	        case R.id.browse_results:
 	        	Intent i = new Intent(this, BrowseResultsActivity.class);
-	        	i.putExtra(FAKE_KEY, fake);
 	        	startActivity(i);
 	            return true;
 	        default:
@@ -201,7 +217,6 @@ public class MainActivity extends Activity implements RecognitionListener{
     	if (recognizer != null){
     		recognizer.cancel();
     	}
-    	loading.cancel(true);
     }
     
     protected void onPause(){
@@ -209,54 +224,72 @@ public class MainActivity extends Activity implements RecognitionListener{
     	if (recognizer != null){ 
     		recognizer.cancel();
     	}
-    	loading.cancel(true);
     	if (timer.started){
     		timer.toSleepMode();
     	}
     	SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
     	SharedPreferences.Editor editor = sharedPref.edit();
     	editor.putBoolean(getString(R.string.speech_setting), withSpeech);
+    	editor.putLong(getString(R.string.last_date_key), ResultsView.getCurrentDate());
+    	editor.putInt(getString(R.string.attempt_key), attempt);
     	editor.commit();
     	saveResults();
     }
     
     protected void onResume(){
     	super.onResume();
-    	final Button startButton = (Button) findViewById(R.id.startButton);
-    	startButton.setBackgroundColor(getResources().getColor(R.color.button_wait));
-    	startButton.setText(getResources().getString(R.string.wait_string));
-    	
-    	loading = new AsyncTask<Void, Void, Exception>() {
-            @Override
-            protected Exception doInBackground(Void... params) {
-                try {
-                    Assets assets = new Assets(MainActivity.this);
-                    File assetDir = assets.syncAssets();
-                    setupRecognizer(assetDir);
-                } catch (IOException e) {
-                    return e;
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Exception result) {
-                if (result != null) {
-                    //TODO need some way to show that speech recognition could not start
-                } else {
-                	if (speechMode == null){
-                		speechMode = KWS_SEARCH_START;
-                	}
-                	recognizer.startListening(speechMode);
-                	updateButton();
-                	Log.d(TAG, "Recognizer setup finished");
-                }
-            }
-        };
-    	loading.execute();
+    	if (withSpeech) startRecognizer();
     	if (timer.started){
     		timer.wakeUp();
     	}
+    }
+   
+    private void startLoading(){
+    	dialog = new ProgressDialog(this);
+		dialog.setMessage("Loading");
+		dialog.setTitle("Speech Recognizer");
+		dialog.setCancelable(false);
+		dialog.show();
+    }
+    
+    private void stopLoading(){
+    	dialog.dismiss();
+    	Log.i(TAG, "Dialog dismissed");
+    }
+    
+    private void startRecognizer(){
+    	startLoading();
+		AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
+			@Override
+			protected Boolean doInBackground(Void... params) {
+				try {
+					Assets assets = new Assets(MainActivity.this);
+					File assetDir = assets.syncAssets();
+					setupRecognizer(assetDir);
+				} catch (IOException e) {
+					return false;
+					}
+				return true;
+				}
+			@Override
+			protected void onPostExecute(Boolean result) {
+				if (!result) {
+					Log.d(TAG, "Recognizer setup finished");
+					recognizer = null;
+        			Toast toast = Toast.makeText(MainActivity.this, "Cannot start recognizer", Toast.LENGTH_SHORT);
+        			toast.show();
+				} else {
+					if (speechMode == null){
+					speechMode = KWS_SEARCH_START;
+					}
+					recognizer.startListening(speechMode);
+					stopLoading();
+					updateButton();
+					Log.d(TAG, "Recognizer setup finished");
+					}
+				}
+			};
+		task.execute();
     }
     
     private void updateButton(){
@@ -272,13 +305,10 @@ public class MainActivity extends Activity implements RecognitionListener{
     
     private void switchSpeechMode(String mode){
     	speechMode = mode;
-    	//if (!loading.isCancelled()) {
-    	if (loading.getStatus() != AsyncTask.Status.FINISHED) {
-    		Log.w(TAG, "trying to switch speech mode when recognizer is loading");
-    		return;
+    	if (recognizer != null){
+    		recognizer.stop();
+    		recognizer.startListening(mode);
     	}
-    	recognizer.stop();
-    	recognizer.startListening(mode);
     }
     
     private void saveResults(){
@@ -286,4 +316,5 @@ public class MainActivity extends Activity implements RecognitionListener{
     	ResultHistory resHistory = new ResultHistory();
     	resHistory.writeResults(this, resultView.getView());
     }
+    
 }

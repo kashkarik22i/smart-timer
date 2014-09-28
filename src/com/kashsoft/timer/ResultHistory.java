@@ -134,4 +134,79 @@ public class ResultHistory {
 		return new Result(time, date, scramble, attempt, result);
 	}
 	
+	public static long avg(List<Result> listOfResults){
+		int count = listOfResults.size();
+		long sum = 0;
+		for (int i = 0; i < count; i++){
+			sum += listOfResults.get(i).getResult();
+		}
+		return sum / count;
+	}
+
+	public static long max(List<Result> listOfResults){
+		int count = listOfResults.size();
+		long max = Long.MIN_VALUE;
+		for (int i = 0; i < count; i++){
+			long current = listOfResults.get(i).getResult();
+			max = (current > max) ? current : max;
+		}
+		return max;
+	}
+	
+	public static long min(List<Result> listOfResults){
+		int count = listOfResults.size();
+		long min = Long.MAX_VALUE;
+		for (int i = 0; i < count; i++){
+			long current = listOfResults.get(i).getResult();
+			min = (current < min) ? current : min;
+		}
+		return min;
+	}
+	
+	public static long threeOfive(List<Result> listOfResults){
+		int count = listOfResults.size();
+		if (count != 5) throw new IllegalArgumentException(
+				String.format("The input list size must be 5 but it is %d", count));
+		long sum = 0;
+		long max = Long.MIN_VALUE;
+		long min = Long.MAX_VALUE;
+		for (int i = 0; i < count; i++){
+			long current = listOfResults.get(i).getResult();
+			if (current < min) min = current;
+			if (current > max) max = current;
+			sum += current;
+		}
+		return (sum - max - min)/(count - 2);
+	}
+	
+	public static long maxTreeOfFive(List<Result> listOfResults){
+		int count = listOfResults.size();
+		if (count < 5) return Long.MIN_VALUE;
+		List<Result> current = new ArrayList<Result>();
+		for (int i = 0; i < 5; i++) current.add(listOfResults.get(i));
+		long max = threeOfive(current);
+		for (int i = 5; i < count; i++){
+			current.add(listOfResults.get(i));
+			current.remove(0);
+			long currentThreeBest = threeOfive(current);
+			max = (currentThreeBest > max) ? currentThreeBest : max;
+		}
+		return max;
+	}
+	
+	public static long minTreeOfFive(List<Result> listOfResults){
+		int count = listOfResults.size();
+		if (count < 5) return Long.MAX_VALUE;
+		List<Result> current = new ArrayList<Result>();
+		for (int i = 0; i < 5; i++) current.add(listOfResults.get(i));
+		long min = threeOfive(current);
+		for (int i = 5; i < count; i++){
+			current.add(listOfResults.get(i));
+			current.remove(0);
+			long currentThreeBest = threeOfive(current);
+			min = (currentThreeBest < min) ? currentThreeBest : min;
+		}
+		return min;
+	}	
+	
 }

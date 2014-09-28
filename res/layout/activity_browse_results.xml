@@ -1,28 +1,54 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:baselineAligned="false"
+    android:orientation="horizontal"
     tools:context=".BrowseResultsActivity" >
 
+    <ScrollView
+    	android:layout_width="match_parent"
+    	android:layout_height="match_parent"
+    	android:scrollbars="none"
+    	android:layout_weight="1">
+    
     <TableLayout
         android:id="@+id/day_table"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="wrap_content" >
         
-		<TableRow
-    		android:layout_width="match_parent"
-    		android:layout_height="match_parent"
-    		android:minHeight="30pt" >
-
-		    <TextView
-    			android:layout_width="match_parent"
+        <TableRow
+            android:layout_width="match_parent"
+    		android:layout_height="match_parent" >
+            
+            <TextView
+    			android:layout_width="wrap_content"
     			android:layout_height="match_parent"
-    			android:padding="5pt"
+    			android:padding="2pt"
+    			android:text="@string/attempt_string"
     			android:background="@drawable/cell_shape" >
-	    	</TextView>
+			</TextView>
+
+            <TextView
+    			android:layout_width="wrap_content"
+    			android:layout_height="match_parent"
+    			android:padding="2pt"
+    			android:text="@string/result_string"
+    			android:background="@drawable/cell_shape" >
+			</TextView>
+            			
 		</TableRow>
-        
-        
+		
     </TableLayout>
+    </ScrollView>
     
-</RelativeLayout>
+    <LinearLayout
+        android:id="@+id/statistics_table"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_weight="1">
+        
+    </LinearLayout>
+
+</LinearLayout>

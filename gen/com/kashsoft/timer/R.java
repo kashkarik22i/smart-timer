@@ -27,6 +27,11 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
     public static final class dimen {
         /**  Default screen margins, per the Android Design guidelines. 
 
+         Example customization of dimensions originally defined in res/values/dimens.xml
+         (such as screen margins) for screens with more than 820dp of available width. This
+         would include 7" and 10" devices in landscape (~960dp and ~1280dp respectively).
+    
+
          Customize dimensions originally defined in res/values/dimens.xml (such as
          screen margins) for sw720dp devices (e.g. 10" tablets) in landscape here.
     
@@ -56,13 +61,15 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int wait_dull_semaphore_colors=0x7f020012;
     }
     public static final class id {
-        public static final int action_settings=0x7f090007;
+        public static final int action_settings=0x7f09000b;
+        public static final int action_settings_browse=0x7f090007;
+        public static final int action_settings_main=0x7f09000a;
         public static final int browse_results=0x7f090009;
         public static final int day_table=0x7f090000;
-        public static final int imageView1=0x7f090003;
+        public static final int imageView1=0x7f090002;
         public static final int microphone=0x7f090008;
         public static final int results=0x7f090006;
-        public static final int scramble=0x7f090002;
+        public static final int scramble=0x7f090003;
         public static final int startButton=0x7f090005;
         public static final int statistics_table=0x7f090001;
         public static final int time=0x7f090004;
@@ -70,12 +77,14 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
     public static final class layout {
         public static final int activity_browse_results=0x7f030000;
         public static final int activity_main=0x7f030001;
-        public static final int result_table_row=0x7f030002;
-        public static final int table_cell=0x7f030003;
+        public static final int activity_settings=0x7f030002;
+        public static final int result_table_row=0x7f030003;
+        public static final int table_cell=0x7f030004;
     }
     public static final class menu {
         public static final int browse_results=0x7f080000;
         public static final int main=0x7f080001;
+        public static final int settings=0x7f080002;
     }
     public static final class string {
         public static final int action_settings=0x7f060012;
@@ -95,6 +104,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int stop_string=0x7f060005;
         public static final int title_activity_browse_results=0x7f06000d;
         public static final int title_activity_results=0x7f06000e;
+        public static final int title_activity_settings=0x7f060015;
         public static final int title_string=0x7f060006;
         public static final int unmute=0x7f060001;
         public static final int wait_string=0x7f060009;

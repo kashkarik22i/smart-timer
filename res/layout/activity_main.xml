@@ -8,12 +8,24 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" >
 
-    <requestFocus />
-
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:contentDescription="@string/cube_picture"
+        android:src="@drawable/name_3" />
+    
     <TextView
         android:id="@+id/scramble"
-        android:layout_width="wrap_content"
-        android:layout_height="18pt"
+        android:layout_width="fill_parent"
+        android:layout_height="20pt"
+        android:textSize="10pt"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:fadingEdge="horizontal"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:scrollHorizontally="true"
         android:text="@string/scramble"
         android:layout_above="@+id/imageView1" />
 
@@ -45,17 +57,9 @@
         android:layout_height="wrap_content"
         android:layout_above="@id/scramble"
         android:layout_alignParentTop="true"
-        android:layout_toStartOf="@+id/time"
-        android:layout_toLeftOf="@+id/time" >
+        android:layout_toStartOf="@+id/startButton"
+        android:layout_toLeftOf="@+id/startButton" >
 
     </ListView>
-
-    <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:contentDescription="@string/cube_picture"
-        android:src="@drawable/name_3" />
 
 </RelativeLayout>

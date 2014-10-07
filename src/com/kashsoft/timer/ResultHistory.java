@@ -136,6 +136,7 @@ public class ResultHistory {
 	
 	public static long avg(List<Result> listOfResults){
 		int count = listOfResults.size();
+		if (count == 0) return Long.MIN_VALUE;
 		long sum = 0;
 		for (int i = 0; i < count; i++){
 			sum += listOfResults.get(i).getResult();

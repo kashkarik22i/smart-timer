@@ -83,6 +83,7 @@ public class MainActivity extends Activity implements RecognitionListener{
 		scramble = new Cube();
 		TextView scrambleView = (TextView) findViewById(R.id.scramble);
 		scrambleView.setText(scramble.getRotationsString());
+		scrambleView.setSelected(true);
 	}
 	
 	@Override
@@ -118,7 +119,11 @@ public class MainActivity extends Activity implements RecognitionListener{
 	        		withSpeech = !withSpeech;
 		        	updateActionBarMicro();
 	        	} else {
-	        		startRecognizer();
+	        		if (recognizer == null){
+	        			startRecognizer();
+	        		} else {
+	        			recognizer.startListening(speechMode);
+	        		}
 	        		if (recognizer != null) {
 	        			withSpeech = !withSpeech;
 	        			updateActionBarMicro();
@@ -130,12 +135,20 @@ public class MainActivity extends Activity implements RecognitionListener{
 	        	}
 	        	return true;
 	        case R.id.browse_results:
-	        	Intent i = new Intent(this, BrowseResultsActivity.class);
-	        	startActivity(i);
+	        	Intent intentBrowse = new Intent(this, BrowseResultsActivity.class);
+	        	startActivity(intentBrowse);
 	            return true;
+	        case R.id.action_settings_main:
+	        	Intent intentSettings = new Intent(this, SettingsActivity.class);
+	        	startActivity(intentSettings);
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }
+	}
+	
+	public void setPreTime(int preTime){
+		final TextView timeDisplay = (TextView) findViewById(R.id.time);
+		timeDisplay.setText(Integer.toString(preTime));
 	}
 	
 	public void setTime(long time){
@@ -169,16 +182,18 @@ public class MainActivity extends Activity implements RecognitionListener{
 
     private void switchTimer(){
     	if (timer.started){
+    		Log.d(TAG, "stopping timer");
     		stopTimer();
     		updateScramble();
     	} else{
+    		Log.d(TAG, "starting timer");
     		startTimer();
     	}
     }
     
     private void startTimer(){
-    	attempt += 1;
-    	timer.set();
+    	attempt++;
+    	timer.set(3000);
     	updateButton();
     	switchSpeechMode(KWS_SEARCH_STOP);
     }
@@ -186,7 +201,13 @@ public class MainActivity extends Activity implements RecognitionListener{
     private void stopTimer(){
 		timer.stop();
 		updateButton();
-		postResult(timer.getTime());
+		if (timer.getTime() == 0) {
+			TextView timeView = (TextView) findViewById(R.id.time);
+			timeView.setText(getString(R.string.zero_string));
+			attempt--;
+		} else {
+			postResult(timer.getTime());
+		}
 		switchSpeechMode(KWS_SEARCH_START);
     }
     

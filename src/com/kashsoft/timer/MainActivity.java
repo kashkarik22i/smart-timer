@@ -5,9 +5,11 @@ import static edu.cmu.pocketsphinx.SpeechRecognizerSetup.defaultSetup;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -48,17 +50,10 @@ public class MainActivity extends Activity implements RecognitionListener{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		Log.i(TAG, "Starting the main activity");
 		//ResultHistory resHistory = new ResultHistory();
 		//resHistory.removeDB(this);
-		
-    	SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-    	withSpeech = sharedPref.getBoolean(getString(R.string.speech_setting), false);
-    	attempt = sharedPref.getInt(getString(R.string.attempt_key), 0);
-    	long lastDate = sharedPref.getLong(getString(R.string.last_date_key), 0);
-    	if (lastDate != ResultsView.getCurrentDate()){
-    		attempt = 0;
-    	}
-    	
+	
 		timer = new CubeTimer(this);
 		
 		final Button startButton = (Button) findViewById(R.id.startButton);
@@ -79,6 +74,40 @@ public class MainActivity extends Activity implements RecognitionListener{
 		updateScramble();
 	}
 
+	private void updateFromPreferences() {
+		Log.i(TAG, "Loading shared preferences");
+    	SharedPreferences localPrefs = getPreferences(Context.MODE_PRIVATE);
+    	SharedPreferences commonPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+    	withSpeech = commonPrefs.getBoolean(getString(R.string.speech_setting), false);
+    	attempt = localPrefs.getInt(getString(R.string.attempt_key), 0);
+    	long lastDate = localPrefs.getLong(getString(R.string.last_date_key), 0);
+    	if (lastDate != ResultsView.getCurrentDate()){
+    		attempt = 0;
+    	}
+    	
+    	int inspectionTime = 0;
+		if (commonPrefs.getBoolean(SettingsActivity.INSPECTION_ON_KEY, SettingsActivity.defaultInspectionOn)) {
+			inspectionTime = commonPrefs.getInt(SettingsActivity.INSPECTION_TIME_KEY, SettingsActivity.defaultInspectionTime);
+		}
+		Log.d(TAG, String.format(Locale.getDefault(), "Inspection time set to: %d", inspectionTime));
+		timer.setInspectionTime(inspectionTime);
+	}
+	
+	private void saveSharedPreferences() {
+    	SharedPreferences localPrefs = getPreferences(Context.MODE_PRIVATE);
+    	SharedPreferences commonPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+    	
+    	SharedPreferences.Editor editor = localPrefs.edit();
+    	editor.putLong(getString(R.string.last_date_key), ResultsView.getCurrentDate());
+    	editor.putInt(getString(R.string.attempt_key), attempt);
+    	editor.commit();
+    	
+    	editor = commonPrefs.edit();
+    	editor.putBoolean(getString(R.string.speech_setting), withSpeech);
+    	
+    	editor.commit();
+	}
+	
 	private void updateScramble(){
 		scramble = new Cube();
 		TextView scrambleView = (TextView) findViewById(R.id.scramble);
@@ -193,7 +222,7 @@ public class MainActivity extends Activity implements RecognitionListener{
     
     private void startTimer(){
     	attempt++;
-    	timer.set(3000);
+    	timer.set();
     	updateButton();
     	switchSpeechMode(KWS_SEARCH_STOP);
     }
@@ -248,17 +277,14 @@ public class MainActivity extends Activity implements RecognitionListener{
     	if (timer.started){
     		timer.toSleepMode();
     	}
-    	SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-    	SharedPreferences.Editor editor = sharedPref.edit();
-    	editor.putBoolean(getString(R.string.speech_setting), withSpeech);
-    	editor.putLong(getString(R.string.last_date_key), ResultsView.getCurrentDate());
-    	editor.putInt(getString(R.string.attempt_key), attempt);
-    	editor.commit();
+    	saveSharedPreferences();
     	saveResults();
     }
     
     protected void onResume(){
     	super.onResume();
+    	updateFromPreferences();
+    	
     	if (withSpeech) startRecognizer();
     	if (timer.started){
     		timer.wakeUp();

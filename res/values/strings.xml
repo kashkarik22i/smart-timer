@@ -23,5 +23,6 @@
     <string name="result_string">Result</string>
     <string name="attempt_string">Attempt</string>
     <string name="title_activity_settings">Settings</string>
+    <string name="pretime_option_choose">Inspection Time</string>
 
 </resources>

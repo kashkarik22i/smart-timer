@@ -61,13 +61,16 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int wait_dull_semaphore_colors=0x7f020012;
     }
     public static final class id {
-        public static final int action_settings=0x7f09000b;
-        public static final int action_settings_browse=0x7f090007;
-        public static final int action_settings_main=0x7f09000a;
-        public static final int browse_results=0x7f090009;
+        public static final int action_settings=0x7f09000e;
+        public static final int action_settings_browse=0x7f09000a;
+        public static final int action_settings_main=0x7f09000d;
+        public static final int browse_results=0x7f09000c;
         public static final int day_table=0x7f090000;
         public static final int imageView1=0x7f090002;
-        public static final int microphone=0x7f090008;
+        public static final int inspection_bar=0x7f090009;
+        public static final int inspection_switch=0x7f090007;
+        public static final int inspection_text=0x7f090008;
+        public static final int microphone=0x7f09000b;
         public static final int results=0x7f090006;
         public static final int scramble=0x7f090003;
         public static final int startButton=0x7f090005;
@@ -97,6 +100,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int last_date_key=0x7f060011;
         public static final int mute=0x7f060002;
         public static final int not_listening=0x7f060008;
+        public static final int pretime_option_choose=0x7f060016;
         public static final int result_string=0x7f060013;
         public static final int scramble=0x7f06000b;
         public static final int speech_setting=0x7f06000f;
